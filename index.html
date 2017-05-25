@@ -14,18 +14,6 @@
     <meta name="description" content="LambdaHack : a small dungeon crawler illustrating the roguelike game engine of the same name" />
     <meta name="keywords" content="roguelike, tactical squad game, procedurally generated, Haskell, free software, gameplay, replayability, turn based" >
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-22466968-3', 'auto');
-  ga('send', 'pageview');
-</script>
-
-    <script language="javascript" src="lambdahack.all.js"></script>
-
     <title>LambdaHack</title>
 
 <style type="text/css">
@@ -58,6 +46,34 @@
         <a href="http://github.com/LambdaHack/LambdaHack/releases" >or download a faster binary</a>
       </h1>
     </div>
+    <div style="text-align:center;" id="pleaseWait">
+<div style="text-align:left;display:inline-block;">
+Please wait. Loading the game Javascript code may take many seconds.
+<p>
+from README: <br>
+The game runs rather slowly in the browser (fastest on Chrome) <br>
+and you are limited to only one font, though it's scalable. <br>
+Keyboard input and saving game progress requires recent enough <br>
+version of a browser (but mouse input is enough to play the game). <br>
+Also, savefiles are prone to corruption on the browser, <br>
+e.g., when it's closed while the game is still saving progress <br>
+(which takes a long time). Hence, after trying out the game, <br>
+you may prefer to use a native binary for your architecture, if it exists.
+</div>
+    </div>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-22466968-3', 'auto');
+  ga('send', 'pageview');
+</script>
+
+    <script language="javascript" src="lambdahack.all.js"></script>
 
   </body>
 </html>
