@@ -24,6 +24,7 @@
   /* The nudge by one pixel above is needed on my Chrome to prevent
      anti-aliasing that sometimes kicks in, ignoring hinting. */
   tr, td { table-layout:fixed;border-collapse:collapse;margin-left:0;margin-right:0;font-family:lambdaHackFont;font-size:16px;padding:0 0 0 0;border:1px solid #000000; }
+/* Even td { height:16px; } doesn't prevent Firefox from inflating cell height up to, e.g., 19.2 plus border. */
 
 @font-face {
     font-family: lambdaHackFont;
@@ -43,17 +44,18 @@ a:active         { color: #FFFFFF }  /* active links          */
 <table>
     <tr>
       <td>
-      <h1>
+      <h1 style="letter-spacing:1px">
         &nbsp;LambdaHack&nbsp;
       </h1>
       </td>
         <td>
-      <h4>
+      <h4 style="line-height:130%">
         Too laggy on any browser except Chrome, so you may prefer to download
-        <a href="http://github.com/LambdaHack/LambdaHack/releases" >a faster binary</a>.
+        <a href="http://github.com/LambdaHack/LambdaHack/releases" >a faster binary</a>
+        which also has proportional fonts.
         If the game window is too large for your screen,
         zoom out (Control-minus).
-        Press NumLock if numpad erratic or use other keys or mouse.
+        Press NumLock if numpad erratic or use another key scheme or mouse.
         Press '?' for help and/or read
         <a href="https://github.com/LambdaHack/LambdaHack/blob/master/GameDefinition/PLAYING.md" >PLAYING</a>.
       </h4>
@@ -63,15 +65,16 @@ a:active         { color: #FFFFFF }  /* active links          */
 
     <div style="text-align:center">
   <div style="display:inline-block;" id="gameMap">
-<div style="text-align:left;font-size:16px;" id="pleaseWait">
+<div style="text-align:left;font-size:16px;line-height:120%" id="pleaseWait">
+<p>
   Please wait. Bleeding edge experimental technology of the future is being loaded, <br>
   which may take 10 or 20 seconds with no apparent progress. <br>
   Be patient. Do not make hasty keystrokes. Breathtaking letters <br>
   in sixteen brilliant colors and HD resolution beckon from the other shore.
 <p>
 from README: <br>
-The game runs rather slowly in the browser (fastest on Chrome) <br>
-and you are limited to only one font, though it's scalable. <br>
+The game runs rather slowly in the browser (fastest on Chrome) and you are <br>
+limited to the square font for all purposes, though it's scalable. <br>
 Keyboard input and saving game progress requires recent enough <br>
 version of a browser (but mouse input is enough to play the game). <br>
 Also, savefiles are prone to corruption on the browser, <br>
