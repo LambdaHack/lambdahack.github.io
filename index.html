@@ -38,9 +38,11 @@ a:visited        { color: #B8BFCB }  /* visited links         */
 a:hover, a:focus { color: #FFFFFF }  /* user hovers, or focus */
 a:active         { color: #FFFFFF }  /* active links          */
 
-.cactus-editor-textarea {background-color:black;color:white;height: 25rem;}
+.cactus-editor-textarea {background-color:black;color:white;font-size:16px;font-family:lambdaHackFont;height:15rem;}
 
-.cactus-button {background-color:grey}
+.cactus-button {background-color:#505050;}
+
+.cactus-editor-above {padding:0;}
 
 </style>
 
@@ -73,11 +75,10 @@ a:active         { color: #FFFFFF }  /* active links          */
 
     </div>
 
-    <div style="text-align:center">
-  <div style="display:inline-block;">
+    <div style="text-align:center;font-size: 16px;">
   <div style="display:inline-block;" tabindex="0" id="gameMap">
   &nbsp;
-<div style="text-align:left;font-size:16px;line-height:120%" id="pleaseWait">
+<div style="text-align:left;font-size:16px;" id="pleaseWait">
 <p>
   Please wait. Bleeding edge experimental technology of the future is being loaded, <br>
   which may take 10 or 20 seconds with no apparent progress. <br>
@@ -109,9 +110,11 @@ Copyright (c) 2008--2021 Andres Loeh, Mikolaj Konarski and others (see git histo
 
 </div>
 
-<div id="comments"></div>
+<div style="text-align:left">
 
-  </div>
+<div id="comments"</div>
+
+</div>
 
     </div>
 
