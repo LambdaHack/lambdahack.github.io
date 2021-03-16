@@ -17,6 +17,8 @@
 
     <title>LambdaHack</title>
 
+<link rel="stylesheet" href="https://latest.cactus.chat/style.css" type="text/css">
+
 <style type="text/css">
 
   /* Speed: <http://www.w3.org/TR/CSS21/tables.html#fixed-table-layout> */
@@ -36,10 +38,16 @@ a:visited        { color: #B8BFCB }  /* visited links         */
 a:hover, a:focus { color: #FFFFFF }  /* user hovers, or focus */
 a:active         { color: #FFFFFF }  /* active links          */
 
+.cactus-editor-textarea {background-color:black;color:white;height: 25rem;}
+
+.cactus-button {background-color:grey}
+
 </style>
 
   </head>
   <body style="color:#C4BEB1; background:#000000; font-family:lambdaHackFont">
+
+    <div>
 
 <table>
     <tr>
@@ -63,8 +71,12 @@ a:active         { color: #FFFFFF }  /* active links          */
     </tr>
 </table>
 
+    </div>
+
     <div style="text-align:center">
-  <div style="display:inline-block;" id="gameMap">
+  <div style="display:inline-block;">
+  <div style="display:inline-block;" tabindex="0" id="gameMap">
+  &nbsp;
 <div style="text-align:left;font-size:16px;line-height:120%" id="pleaseWait">
 <p>
   Please wait. Bleeding edge experimental technology of the future is being loaded, <br>
@@ -82,8 +94,29 @@ you may prefer to use a native binary for your architecture, if it exists.
 <p>
 Copyright (c) 2008--2021 Andres Loeh, Mikolaj Konarski and others (see git history)
 </div>
+  &nbsp;
   </div>
+
+<div style="text-align:left">
+
+<p>
+  &nbsp;
+<p>
+  &nbsp;
+<p>
+
+  I hope you have fun playing. Regardless, please leave some (anonymous) feedback below.
+
+</div>
+
+<div id="comments"></div>
+
+  </div>
+
     </div>
+
+    <script language="javascript" src="lz-string.min.js"></script>
+    <script language="javascript" src="lambdahack.all.js"></script>
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -95,8 +128,17 @@ Copyright (c) 2008--2021 Andres Loeh, Mikolaj Konarski and others (see git histo
   ga('send', 'pageview');
 </script>
 
-    <script language="javascript" src="lz-string.min.js"></script>
-    <script language="javascript" src="lambdahack.all.js"></script>
+<script type="text/javascript" src="https://latest.cactus.chat/cactus.js"></script>
+
+<script>
+initComments({
+  node: document.getElementById("comments"),
+  defaultHomeserverUrl: "https://matrix.cactus.chat:8448",
+  serverName: "cactus.chat",
+  siteName: "lambdahack.github.io",
+  commentSectionId: "about-the-sample-game-for-LH-engine"
+})
+</script>
 
   </body>
 </html>
