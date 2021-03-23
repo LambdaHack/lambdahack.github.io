@@ -22,9 +22,10 @@
 <style type="text/css">
 
   /* Speed: <http://www.w3.org/TR/CSS21/tables.html#fixed-table-layout> */
-  table { table-layout:fixed;border-collapse:collapse;border:none;margin-left:1px; }
-  /* The nudge by one pixel above is needed on my Chrome to prevent
-     anti-aliasing that sometimes kicks in, ignoring hinting. */
+  table { table-layout:fixed;border-collapse:collapse;border:none;margin-left:0px; }
+  /* The nudge by one pixel in margin-left above was needed on Chrome to prevent
+     anti-aliasing that sometimes kicked in, ignoring hinting, but now
+     in a newer version of Chrome, on a different machine, 0px is needed. */
   tr, td { table-layout:fixed;border-collapse:collapse;margin-left:0;margin-right:0;font-family:lambdaHackFont;font-size:16px;padding:0 0 0 0;border:1px solid #000000; }
 /* Even td { height:16px; } doesn't prevent Firefox from inflating cell height up to, e.g., 19.2 plus border. */
 
