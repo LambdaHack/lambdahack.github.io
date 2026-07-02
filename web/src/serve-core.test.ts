@@ -13,6 +13,10 @@ describe("contentType", () => {
     expect(contentType("index.html")).toBe("text/html; charset=utf-8");
     expect(contentType("a.json")).toBe("application/json; charset=utf-8");
   });
+  it("serves woff/woff2 with their font types (a wrong type here makes browsers reject @font-face)", () => {
+    expect(contentType("/16x16xw.woff")).toBe("font/woff");
+    expect(contentType("/16x16xw.woff2")).toBe("font/woff2");
+  });
   it("is case-insensitive on the extension", () => {
     expect(contentType("X.WASM")).toBe("application/wasm");
   });

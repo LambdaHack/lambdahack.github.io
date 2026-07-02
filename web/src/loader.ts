@@ -38,6 +38,7 @@ declare global {
 async function main(): Promise<void> {
   const screen = document.getElementById("screen");
   if (!screen) throw new Error("missing #screen element");
+  const status = document.getElementById("status");
 
   // In-memory filesystem: stdin, console stdout/stderr, and a writable root for
   // the game's data dir (/LambdaHack); persistence is not retained across loads.
@@ -79,7 +80,18 @@ async function main(): Promise<void> {
   globalThis.lhPaint = (addr, w, h) => term.paint(addr, w, h);
 
   wasi.initialize(inst as unknown as { exports: { memory: WebAssembly.Memory; _initialize?: () => unknown } });
+  // Mirrors Dom.hs's replaceChild_ of the "pleaseWait" placeholder: drop the
+  // loading message only once everything is wired and about to start, not
+  // before, so it stays visible for the whole duration of a slow load.
+  status?.remove();
   void exports.lhStart();
 }
 
-main().catch((e) => console.error(e));
+main().catch((e) => {
+  console.error(e);
+  const status = document.getElementById("status");
+  if (status) {
+    status.textContent = "Failed to load LambdaHack wasm. See console for details.";
+    status.style.color = "#d50505"; // Red, from the game's own palette
+  }
+});

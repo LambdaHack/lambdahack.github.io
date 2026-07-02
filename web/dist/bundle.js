@@ -1502,7 +1502,7 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
     container.style.display = "grid";
     container.style.gridTemplateColumns = `repeat(${w}, 1ch)`;
     container.style.gridAutoRows = "1em";
-    container.style.fontFamily = "monospace";
+    container.style.fontFamily = "lambdaHackFont, monospace";
     container.style.lineHeight = "1em";
     container.style.whiteSpace = "pre";
     spans = new Array(w * h);
@@ -1608,6 +1608,7 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
 async function main() {
   const screen = document.getElementById("screen");
   if (!screen) throw new Error("missing #screen element");
+  const status = document.getElementById("status");
   const fds = [
     new OpenFile(new File([])),
     ConsoleStdout.lineBuffered((line) => console.log("[lh]", line)),
@@ -1640,6 +1641,14 @@ async function main() {
   );
   globalThis.lhPaint = (addr, w, h) => term.paint(addr, w, h);
   wasi.initialize(inst);
+  status?.remove();
   void exports.lhStart();
 }
-main().catch((e) => console.error(e));
+main().catch((e) => {
+  console.error(e);
+  const status = document.getElementById("status");
+  if (status) {
+    status.textContent = "Failed to load LambdaHack wasm. See console for details.";
+    status.style.color = "#d50505";
+  }
+});

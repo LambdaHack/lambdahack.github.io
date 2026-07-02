@@ -10,7 +10,9 @@ var TYPES = {
   ".mjs": "text/javascript; charset=utf-8",
   ".wasm": "application/wasm",
   ".json": "application/json; charset=utf-8",
-  ".css": "text/css; charset=utf-8"
+  ".css": "text/css; charset=utf-8",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2"
 };
 function contentType(path) {
   const dot = path.lastIndexOf(".");

@@ -58,7 +58,7 @@ export function mountTerminal(
     container.style.display = "grid";
     container.style.gridTemplateColumns = `repeat(${w}, 1ch)`;
     container.style.gridAutoRows = "1em";
-    container.style.fontFamily = "monospace";
+    container.style.fontFamily = "lambdaHackFont, monospace";
     container.style.lineHeight = "1em";
     container.style.whiteSpace = "pre";
     spans = new Array(w * h);
