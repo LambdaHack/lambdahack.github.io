@@ -112,10 +112,38 @@ export function mountTerminal(
     }
   }
 
+  // Keys a Ctrl-only chord should still pass to the browser for, mirroring
+  // Dom.hs's `browserKeys = "+-0tTnNdxcv"` allowlist: zoom, tab/window
+  // management, bookmark, clipboard. Both cases of t/n are listed there (and
+  // ported here) to also cover Caps Lock, not Shift -- the modifier check
+  // below requires a bare Ctrl chord, so Ctrl+Shift+T doesn't qualify.
+  const CTRL_PASSTHROUGH_KEYS = new Set([
+    "+", "-", "0", "t", "T", "n", "N", "d", "x", "c", "v",
+  ]);
+
+  // Verified against Key.hs's keyTranslateWeb: every KeyboardEvent.key value
+  // its DeadKey clauses cover -- chiefly, any modifier key pressed by itself
+  // (Shift, Control, Alt/AltGraph, Meta, CapsLock, NumLock, Win,
+  // Menu/ContextMenu) plus the literal "Dead" compose-key event.
+  const DEAD_KEYS = new Set([
+    "Dead", "Shift", "Control", "Meta", "Menu", "ContextMenu",
+    "Alt", "AltGraph", "Num_Lock", "NumLock", "Caps_Lock", "CapsLock", "Win",
+  ]);
+
   window.addEventListener("keydown", (e) => {
     onKey(e.key, e.ctrlKey, e.shiftKey, e.altKey, e.metaKey);
-    // Let browser shortcuts through; capture plain game keys.
-    if (!e.ctrlKey && !e.metaKey) e.preventDefault();
+
+    const ctrlOnly = e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
+    const altOnly = e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey;
+    const isDeadKey = DEAD_KEYS.has(e.key);
+
+    const passThrough =
+      altOnly || (ctrlOnly && CTRL_PASSTHROUGH_KEYS.has(e.key)) || isDeadKey;
+
+    if (!passThrough) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   });
 
   return { paint };

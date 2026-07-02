@@ -1550,9 +1550,44 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
       el.style.boxShadow = `inset 0 0 0 1px ${s.border}`;
     }
   }
+  const CTRL_PASSTHROUGH_KEYS = /* @__PURE__ */ new Set([
+    "+",
+    "-",
+    "0",
+    "t",
+    "T",
+    "n",
+    "N",
+    "d",
+    "x",
+    "c",
+    "v"
+  ]);
+  const DEAD_KEYS = /* @__PURE__ */ new Set([
+    "Dead",
+    "Shift",
+    "Control",
+    "Meta",
+    "Menu",
+    "ContextMenu",
+    "Alt",
+    "AltGraph",
+    "Num_Lock",
+    "NumLock",
+    "Caps_Lock",
+    "CapsLock",
+    "Win"
+  ]);
   window.addEventListener("keydown", (e) => {
     onKey(e.key, e.ctrlKey, e.shiftKey, e.altKey, e.metaKey);
-    if (!e.ctrlKey && !e.metaKey) e.preventDefault();
+    const ctrlOnly = e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
+    const altOnly = e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey;
+    const isDeadKey = DEAD_KEYS.has(e.key);
+    const passThrough = altOnly || ctrlOnly && CTRL_PASSTHROUGH_KEYS.has(e.key) || isDeadKey;
+    if (!passThrough) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   });
   return { paint };
 }
