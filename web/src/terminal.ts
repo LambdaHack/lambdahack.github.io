@@ -96,19 +96,42 @@ export function mountTerminal(
     prev = new Uint32Array(w * h).fill(0xffffffff);
   }
 
-  function paint(addr: number, w: number, h: number): void {
-    if (w !== cols || h !== rows) buildGrid(w, h);
-    const buf = new Uint32Array(getMemory().buffer, addr, w * h);
+  let pendingFrame: Uint32Array | null = null;
+  let rafHandle: number | null = null;
+
+  // Apply one already-snapshotted frame's cell diffs to the DOM. Deferred
+  // to requestAnimationFrame by paint() below, batching same-tick calls
+  // into a single browser paint, mirroring Dom.hs's
+  // requestAnimationFrame_/newRequestAnimationFrameCallbackSync.
+  function applyFrame(buf: Uint32Array): void {
     for (let i = 0; i < buf.length; i++) {
       if (buf[i] === prev[i]) continue;
       prev[i] = buf[i];
-      const s = styledCell(buf[i], (i / w) | 0);
+      const s = styledCell(buf[i], (i / cols) | 0);
       const el = spans[i];
       el.textContent = s.char;
       el.style.color = s.color;
       el.style.backgroundColor = s.background;
       // Highlight square as an inset outline: invisible when it equals the bg.
       el.style.boxShadow = `inset 0 0 0 1px ${s.border}`;
+    }
+  }
+
+  function paint(addr: number, w: number, h: number): void {
+    if (w !== cols || h !== rows) buildGrid(w, h);
+    // Snapshot synchronously: the wasm buffer at `addr` is only valid for
+    // the duration of this call (Wasm.hs's display uses an `unsafe` FFI
+    // import specifically so the GC can't move/reuse it mid-call). Reading
+    // it from a later rAF callback would risk reading stale/reused memory,
+    // so only the DOM-mutation work in applyFrame is deferred, not the read.
+    pendingFrame = new Uint32Array(getMemory().buffer, addr, w * h).slice();
+    if (rafHandle === null) {
+      rafHandle = requestAnimationFrame(() => {
+        rafHandle = null;
+        const frame = pendingFrame;
+        pendingFrame = null;
+        if (frame) applyFrame(frame);
+      });
     }
   }
 

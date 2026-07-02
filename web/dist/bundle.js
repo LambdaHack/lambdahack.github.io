@@ -1536,18 +1536,30 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
     container.appendChild(frag);
     prev = new Uint32Array(w * h).fill(4294967295);
   }
-  function paint(addr, w, h) {
-    if (w !== cols || h !== rows) buildGrid(w, h);
-    const buf = new Uint32Array(getMemory().buffer, addr, w * h);
+  let pendingFrame = null;
+  let rafHandle = null;
+  function applyFrame(buf) {
     for (let i = 0; i < buf.length; i++) {
       if (buf[i] === prev[i]) continue;
       prev[i] = buf[i];
-      const s = styledCell(buf[i], i / w | 0);
+      const s = styledCell(buf[i], i / cols | 0);
       const el = spans[i];
       el.textContent = s.char;
       el.style.color = s.color;
       el.style.backgroundColor = s.background;
       el.style.boxShadow = `inset 0 0 0 1px ${s.border}`;
+    }
+  }
+  function paint(addr, w, h) {
+    if (w !== cols || h !== rows) buildGrid(w, h);
+    pendingFrame = new Uint32Array(getMemory().buffer, addr, w * h).slice();
+    if (rafHandle === null) {
+      rafHandle = requestAnimationFrame(() => {
+        rafHandle = null;
+        const frame = pendingFrame;
+        pendingFrame = null;
+        if (frame) applyFrame(frame);
+      });
     }
   }
   const CTRL_PASSTHROUGH_KEYS = /* @__PURE__ */ new Set([
