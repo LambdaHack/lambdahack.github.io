@@ -10,6 +10,24 @@ interface LhExports {
   memory: WebAssembly.Memory;
   lhStart: () => Promise<void>;
   lhKey: (key: string, ctrl: boolean, shift: boolean, alt: boolean, meta: boolean) => Promise<void>;
+  lhWheel: (
+    col: number,
+    row: number,
+    deltaY: number,
+    ctrl: boolean,
+    shift: boolean,
+    alt: boolean,
+    meta: boolean,
+  ) => Promise<void>;
+  lhMouseUp: (
+    col: number,
+    row: number,
+    button: number,
+    ctrl: boolean,
+    shift: boolean,
+    alt: boolean,
+    meta: boolean,
+  ) => Promise<void>;
 }
 
 declare global {
@@ -45,9 +63,19 @@ async function main(): Promise<void> {
   Object.assign(importExports, inst.exports);
 
   const exports = inst.exports as unknown as LhExports;
-  const term = mountTerminal(screen, () => exports.memory, (k, c, s, a, m) => {
-    void exports.lhKey(k, c, s, a, m);
-  });
+  const term = mountTerminal(
+    screen,
+    () => exports.memory,
+    (k, c, s, a, m) => {
+      void exports.lhKey(k, c, s, a, m);
+    },
+    (col, row, deltaY, c, s, a, m) => {
+      void exports.lhWheel(col, row, deltaY, c, s, a, m);
+    },
+    (col, row, button, c, s, a, m) => {
+      void exports.lhMouseUp(col, row, button, c, s, a, m);
+    },
+  );
   globalThis.lhPaint = (addr, w, h) => term.paint(addr, w, h);
 
   wasi.initialize(inst as unknown as { exports: { memory: WebAssembly.Memory; _initialize?: () => unknown } });

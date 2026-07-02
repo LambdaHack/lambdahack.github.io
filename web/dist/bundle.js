@@ -1490,7 +1490,7 @@ function styledCell(w, row) {
 }
 
 // src/terminal.ts
-function mountTerminal(container, getMemory, onKey) {
+function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
   let cols = 0;
   let rows = 0;
   let spans = [];
@@ -1510,6 +1510,26 @@ function mountTerminal(container, getMemory, onKey) {
     for (let i = 0; i < w * h; i++) {
       const el = document.createElement("span");
       el.style.textAlign = "center";
+      const col = i % w;
+      const row = i / w | 0;
+      el.addEventListener(
+        "wheel",
+        (e) => {
+          onWheel(col, row, e.deltaY, e.ctrlKey, e.shiftKey, e.altKey, e.metaKey);
+          e.preventDefault();
+          e.stopPropagation();
+        },
+        { passive: false }
+      );
+      el.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      el.addEventListener("mouseup", (e) => {
+        onMouseUp(col, row, e.button, e.ctrlKey, e.shiftKey, e.altKey, e.metaKey);
+        e.preventDefault();
+        e.stopPropagation();
+      });
       spans[i] = el;
       frag.appendChild(el);
     }
@@ -1558,9 +1578,19 @@ async function main() {
   });
   Object.assign(importExports, inst.exports);
   const exports = inst.exports;
-  const term = mountTerminal(screen, () => exports.memory, (k, c, s, a, m) => {
-    void exports.lhKey(k, c, s, a, m);
-  });
+  const term = mountTerminal(
+    screen,
+    () => exports.memory,
+    (k, c, s, a, m) => {
+      void exports.lhKey(k, c, s, a, m);
+    },
+    (col, row, deltaY, c, s, a, m) => {
+      void exports.lhWheel(col, row, deltaY, c, s, a, m);
+    },
+    (col, row, button, c, s, a, m) => {
+      void exports.lhMouseUp(col, row, button, c, s, a, m);
+    }
+  );
   globalThis.lhPaint = (addr, w, h) => term.paint(addr, w, h);
   wasi.initialize(inst);
   void exports.lhStart();
