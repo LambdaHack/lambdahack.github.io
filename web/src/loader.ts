@@ -40,8 +40,12 @@ async function main(): Promise<void> {
   if (!screen) throw new Error("missing #screen element");
   const status = document.getElementById("status");
 
-  // In-memory filesystem: stdin, console stdout/stderr, and a writable root for
-  // the game's data dir (/LambdaHack); persistence is not retained across loads.
+  // In-memory filesystem: stdin, console stdout/stderr, and a writable root
+  // for the game's data dir (/LambdaHack). Contents here are NOT retained
+  // across loads, but that's fine: save-file persistence is handled
+  // separately by WasmFile.hs, which talks to localStorage directly via
+  // JSFFI and never touches this filesystem at all. Only genuinely
+  // throwaway/scratch I/O should end up going through this.
   const fds = [
     new OpenFile(new File([])),
     ConsoleStdout.lineBuffered((line) => console.log("[lh]", line)),
