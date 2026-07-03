@@ -1495,6 +1495,7 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
   let rows = 0;
   let spans = [];
   let prev = new Uint32Array(0);
+  let hasFocusedOnce = false;
   function buildGrid(w, h) {
     cols = w;
     rows = h;
@@ -1535,6 +1536,10 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
     }
     container.appendChild(frag);
     prev = new Uint32Array(w * h).fill(4294967295);
+    if (!hasFocusedOnce) {
+      hasFocusedOnce = true;
+      container.focus();
+    }
   }
   let pendingFrame = null;
   let rafHandle = null;
@@ -1590,7 +1595,9 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
     "CapsLock",
     "Win"
   ]);
-  window.addEventListener("keydown", (e) => {
+  container.addEventListener("mousedown", () => container.focus());
+  window.addEventListener("pageshow", () => container.focus());
+  container.addEventListener("keydown", (e) => {
     onKey(e.key, e.ctrlKey, e.shiftKey, e.altKey, e.metaKey);
     const ctrlOnly = e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
     const altOnly = e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey;

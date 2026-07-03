@@ -43,7 +43,12 @@
         margin: 0 auto;
         width: max-content;
         font-size: 16px;
-        outline: none;
+      }
+      /* Visible only for keyboard-triggered focus (Tab), not mouse clicks --
+         #screen is tabindex=0 and was previously outline:none, meaning a
+         keyboard-only user tabbing here got no visible indicator at all. */
+      #screen:focus-visible {
+        outline: 2px solid #c4beb1;
       }
       #status {
         text-align: left;

@@ -50,6 +50,7 @@ export function mountTerminal(
   let rows = 0;
   let spans: HTMLSpanElement[] = [];
   let prev = new Uint32Array(0);
+  let hasFocusedOnce = false;
 
   function buildGrid(w: number, h: number): void {
     cols = w;
@@ -94,6 +95,20 @@ export function mountTerminal(
     container.appendChild(frag);
     // Force a full repaint of the new grid.
     prev = new Uint32Array(w * h).fill(0xffffffff);
+    if (!hasFocusedOnce) {
+      hasFocusedOnce = true;
+      // Needed *in addition to* the pageshow listener below, not instead of
+      // it: main() is async (fetches/instantiates the wasm module before
+      // ever reaching mountTerminal), so on a fresh load the browser's own
+      // load/pageshow events can fire and complete before this module gets
+      // around to registering its pageshow listener at all -- that race is
+      // exactly what left fresh-load/reload without focus. This call, tied
+      // to the first real frame actually being ready, doesn't have that
+      // race. pageshow still covers bfcache-restored back/forward
+      // navigation, which never reaches this buildGrid path again since
+      // grid dimensions haven't changed and no setup code reruns.
+      container.focus();
+    }
   }
 
   let pendingFrame: Uint32Array | null = null;
@@ -153,7 +168,32 @@ export function mountTerminal(
     "Alt", "AltGraph", "Num_Lock", "NumLock", "Caps_Lock", "CapsLock", "Win",
   ]);
 
-  window.addEventListener("keydown", (e) => {
+  // Clicking anywhere on the grid (re)focuses the container itself: <span>
+  // cells aren't independently focusable, and a click on one doesn't
+  // automatically move DOM focus onto its parent. Without this, a mouse
+  // click on the grid wouldn't actually route subsequent keydowns here,
+  // now that the listener below is scoped to container instead of window.
+  container.addEventListener("mousedown", () => container.focus());
+
+  // Covers back/forward navigation restored from bfcache -- e.g. clicking a
+  // banner link then going back -- which the buildGrid focus call above
+  // can't catch, since bfcache restoration reuses this module's existing
+  // state without rerunning any setup code. In principle pageshow also
+  // fires on a fresh load, but relying on that turned out unreliable in
+  // practice (main() is async and can race ahead of this listener even
+  // being registered yet), which is exactly why the buildGrid call above
+  // still exists rather than being replaced by this alone.
+  window.addEventListener("pageshow", () => container.focus());
+
+  // Scoped to container, not window, to match Dom.hs's listener being
+  // attached to a specific div: keydowns firing while focus is elsewhere
+  // on the page (e.g. a banner link) must not reach the game at all -- not
+  // just skip preventDefault, but skip onKey too. Tab is a real bound game
+  // command (cycle party member, per Content/Input.hs), so without this
+  // scoping it would both cycle the party AND move page focus at the same
+  // time whenever pressed outside the game area, which is wrong; this
+  // scoping fixes that for every key uniformly, not just Tab specifically.
+  container.addEventListener("keydown", (e) => {
     onKey(e.key, e.ctrlKey, e.shiftKey, e.altKey, e.metaKey);
 
     const ctrlOnly = e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
