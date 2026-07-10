@@ -52,6 +52,10 @@ export function mountTerminal(
   let prev = new Uint32Array(0);
   let hasFocusedOnce = false;
 
+  function focusTerminal(): void {
+    container.focus();
+  }
+
   function buildGrid(w: number, h: number): void {
     cols = w;
     rows = h;
@@ -107,7 +111,7 @@ export function mountTerminal(
       // race. pageshow still covers bfcache-restored back/forward
       // navigation, which never reaches this buildGrid path again since
       // grid dimensions haven't changed and no setup code reruns.
-      container.focus();
+      focusTerminal();
     }
   }
 
@@ -173,7 +177,7 @@ export function mountTerminal(
   // automatically move DOM focus onto its parent. Without this, a mouse
   // click on the grid wouldn't actually route subsequent keydowns here,
   // now that the listener below is scoped to container instead of window.
-  container.addEventListener("mousedown", () => container.focus());
+  container.addEventListener("mousedown", focusTerminal);
 
   // Covers back/forward navigation restored from bfcache -- e.g. clicking a
   // banner link then going back -- which the buildGrid focus call above
@@ -183,7 +187,7 @@ export function mountTerminal(
   // practice (main() is async and can race ahead of this listener even
   // being registered yet), which is exactly why the buildGrid call above
   // still exists rather than being replaced by this alone.
-  window.addEventListener("pageshow", () => container.focus());
+  window.addEventListener("pageshow", focusTerminal);
 
   // Scoped to container, not window, to match Dom.hs's listener being
   // attached to a specific div: keydowns firing while focus is elsewhere
