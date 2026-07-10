@@ -4,9 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Paths assume web/index.html is deployed at the same root as master's
-         index.html, matching where these assets actually live in the repo.
-         Verify against the wasm branch's actual deploy/build output layout. -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -18,8 +15,6 @@
 
     <title>LambdaHack (wasm)</title>
     <style>
-      /* Same font file as master's index.html; verify it's copied into web/
-         (or adjust this src path) as part of the build output. */
       @font-face {
         font-family: lambdaHackFont;
         src: url("./16x16xw.woff");
@@ -94,10 +89,6 @@
       Copyright (c) 2008--2021 Andres Loeh, Mikolaj Konarski and others (see git history)
     </div>
     <div id="screen" tabindex="0"></div>
-    <!-- Same lz-string build master's index.html uses, needed by
-         WasmFile.hs's compressToUTF16/decompressFromUTF16 FFI calls.
-         Like 16x16xw.woff, this needs to be copied into web/'s build
-         output (currently only lives at the repo root) -- verify path. -->
     <script src="./lz-string.min.js"></script>
     <script type="module" src="./bundle.js"></script>
   </body>
