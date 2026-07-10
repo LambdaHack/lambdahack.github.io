@@ -68,7 +68,7 @@ export function mountTerminal(
       const el = document.createElement("span");
       el.style.textAlign = "center";
       const col = i % w;
-      const row = (i / w) | 0;
+      const row = Math.floor(i / w);
       // { passive: false } is required to preventDefault() a wheel listener.
       el.addEventListener(
         "wheel",

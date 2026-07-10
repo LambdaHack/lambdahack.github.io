@@ -1512,7 +1512,7 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
       const el = document.createElement("span");
       el.style.textAlign = "center";
       const col = i % w;
-      const row = i / w | 0;
+      const row = Math.floor(i / w);
       el.addEventListener(
         "wheel",
         (e) => {
