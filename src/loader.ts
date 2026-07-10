@@ -67,18 +67,18 @@ async function main(): Promise<void> {
   });
   Object.assign(importExports, inst.exports);
 
-  const exports = inst.exports as unknown as LhExports;
+  const lh = inst.exports as unknown as LhExports;
   const term = mountTerminal(
     screen,
-    () => exports.memory,
+    () => lh.memory,
     (k, c, s, a, m) => {
-      void exports.lhKey(k, c, s, a, m);
+      void lh.lhKey(k, c, s, a, m);
     },
     (col, row, deltaY, c, s, a, m) => {
-      void exports.lhWheel(col, row, deltaY, c, s, a, m);
+      void lh.lhWheel(col, row, deltaY, c, s, a, m);
     },
     (col, row, button, c, s, a, m) => {
-      void exports.lhMouseUp(col, row, button, c, s, a, m);
+      void lh.lhMouseUp(col, row, button, c, s, a, m);
     },
   );
   globalThis.lhPaint = (addr, w, h) => term.paint(addr, w, h);
@@ -88,7 +88,7 @@ async function main(): Promise<void> {
   // loading message only once everything is wired and about to start, not
   // before, so it stays visible for the whole duration of a slow load.
   status?.remove();
-  void exports.lhStart();
+  void lh.lhStart();
 }
 
 main().catch((e) => {
