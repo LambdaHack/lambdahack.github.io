@@ -6,7 +6,7 @@
 import { styledCell } from "./terminal-core.js";
 
 export interface Terminal {
-  paint(addr: number, w: number, h: number): void;
+  submitFrame(addr: number, w: number, h: number): void;
 }
 
 export type KeyHandler = (
@@ -119,8 +119,8 @@ export function mountTerminal(
   let rafHandle: number | null = null;
 
   // Apply one already-snapshotted frame's cell diffs to the DOM. Deferred
-  // to requestAnimationFrame by paint() below, batching same-tick calls
-  // into a single browser paint, mirroring Dom.hs's
+  // to requestAnimationFrame by submitFrame() below, batching same-tick
+  // calls into a single browser paint, mirroring Dom.hs's
   // requestAnimationFrame_/newRequestAnimationFrameCallbackSync.
   function applyFrame(buf: Uint32Array): void {
     for (let i = 0; i < buf.length; i++) {
@@ -136,7 +136,9 @@ export function mountTerminal(
     }
   }
 
-  function paint(addr: number, w: number, h: number): void {
+  // Snapshots the framebuffer and schedules a render; does not paint
+  // synchronously itself (see applyFrame, deferred below via rAF).
+  function submitFrame(addr: number, w: number, h: number): void {
     if (w !== cols || h !== rows) buildGrid(w, h);
     // Snapshot synchronously: the wasm buffer at `addr` is only valid for
     // the duration of this call (Wasm.hs's display uses an `unsafe` FFI
@@ -213,5 +215,5 @@ export function mountTerminal(
     }
   });
 
-  return { paint };
+  return { submitFrame };
 }

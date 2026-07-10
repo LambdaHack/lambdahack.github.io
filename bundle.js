@@ -1558,7 +1558,7 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
       el.style.boxShadow = `inset 0 0 0 1px ${s.border}`;
     }
   }
-  function paint(addr, w, h) {
+  function submitFrame(addr, w, h) {
     if (w !== cols || h !== rows) buildGrid(w, h);
     pendingFrame = new Uint32Array(getMemory().buffer, addr, w * h).slice();
     if (rafHandle === null) {
@@ -1611,7 +1611,7 @@ function mountTerminal(container, getMemory, onKey, onWheel, onMouseUp) {
       e.stopPropagation();
     }
   });
-  return { paint };
+  return { submitFrame };
 }
 
 // src/loader.ts
@@ -1635,24 +1635,24 @@ async function main() {
     ghc_wasm_jsffi: jsffiFactory(importExports)
   });
   Object.assign(importExports, inst.exports);
-  const exports = inst.exports;
+  const lh = inst.exports;
   const term = mountTerminal(
     screen,
-    () => exports.memory,
+    () => lh.memory,
     (k, c, s, a, m) => {
-      void exports.lhKey(k, c, s, a, m);
+      void lh.lhKey(k, c, s, a, m);
     },
     (col, row, deltaY, c, s, a, m) => {
-      void exports.lhWheel(col, row, deltaY, c, s, a, m);
+      void lh.lhWheel(col, row, deltaY, c, s, a, m);
     },
     (col, row, button, c, s, a, m) => {
-      void exports.lhMouseUp(col, row, button, c, s, a, m);
+      void lh.lhMouseUp(col, row, button, c, s, a, m);
     }
   );
-  globalThis.lhPaint = (addr, w, h) => term.paint(addr, w, h);
+  globalThis.lhSubmitFrame = (addr, w, h) => term.submitFrame(addr, w, h);
   wasi.initialize(inst);
   status?.remove();
-  void exports.lhStart();
+  void lh.lhStart();
 }
 main().catch((e) => {
   console.error(e);

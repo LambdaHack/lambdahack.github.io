@@ -1,7 +1,8 @@
 // Browser loader wiring: instantiate the LambdaHack wasm reactor with an
-// in-memory WASI shim and the generated JSFFI glue, hook up paint + keyboard,
-// then start the game. Mirrors web/harness.mjs (the node integration harness),
-// but renders to the DOM instead of capturing frames. Not unit-tested.
+// in-memory WASI shim and the generated JSFFI glue, hook up frame submission
+// + keyboard, then start the game. Mirrors web/harness.mjs (the node
+// integration harness), but renders to the DOM instead of capturing frames.
+// Not unit-tested.
 
 import { WASI, OpenFile, File, ConsoleStdout, PreopenDirectory } from "@bjorn3/browser_wasi_shim";
 import { mountTerminal } from "./terminal.js";
@@ -32,7 +33,7 @@ interface LhExports {
 
 declare global {
   // eslint-disable-next-line no-var
-  var lhPaint: ((addr: number, w: number, h: number) => void) | undefined;
+  var lhSubmitFrame: ((addr: number, w: number, h: number) => void) | undefined;
 }
 
 async function main(): Promise<void> {
@@ -81,7 +82,7 @@ async function main(): Promise<void> {
       void lh.lhMouseUp(col, row, button, c, s, a, m);
     },
   );
-  globalThis.lhPaint = (addr, w, h) => term.paint(addr, w, h);
+  globalThis.lhSubmitFrame = (addr, w, h) => term.submitFrame(addr, w, h);
 
   wasi.initialize(inst as unknown as { exports: { memory: WebAssembly.Memory; _initialize?: () => unknown } });
   // Mirrors Dom.hs's replaceChild_ of the "pleaseWait" placeholder: drop the
